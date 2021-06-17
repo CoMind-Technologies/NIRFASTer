@@ -42,9 +42,9 @@ function [J] = jacobian_moment_semiinfinite_space_TR(r_1, r_2, r_3, omega, mua, 
 % correct z_1 position, assuming z_1 is the boundary of the tissue we place
 % the origin of the source deeper in the tissue REF[3]
 b = 1;
-z_1 = compute_z1(g, mus);
+z_1 = ( ( 1 - g ) * mus ) ^ (-1);
 gamma = mua * c;
-kappa = c / ( mua + ( 1 - g ) * mus);
+kappa = c / ( 3 * ( mua + ( 1 - g ) * mus ) );
 
 if ( r_1(3) ~= 0 ) || ( r_3(3) ~= 0)
     error(['This function only supports z = 0  as the position of the boundary and origin of coordinates.',...
@@ -71,7 +71,7 @@ rho_tilde_12_pos = compute_rho_ab_tilde(r_1 + [0 0 z_1], r_2);
 rho_tilde_23 = compute_rho_ab_tilde(r_2, r_3);
 
 % TODO are these below supposed to be distances over z?
-z_23 = r_3(3) - r_2(3);
+z_23 = abs(r_3(3) - r_2(3));
 z_12_neg = r_2(3) - z_1;
 z_12_pos = r_2(3) + z_1;
 
@@ -198,12 +198,6 @@ S = 1 / ( 4 * ( 2 * pi ) ^ 3  * kappa ) * ( 1 + sigma * y ) / ( x * y ^ 2 )...
 
 end
 
-function f = compute_f(x, t, kappa, gamma)
-% Implements REF[1] Eq. Table 2, f(x) for Time-Domain
- f = ( 2 * kappa * t ) ^ (- 3 / 2)...
-     * exp( - gamma * t - x ^ 2 / ( 4 * kappa * t) );
-end
-
 % - Vector from position a to b: rho_vec_ab = r_b - r_a
 % - Distance from a to b: rho_ab = norm(v_rho_ab)
 % - Unit vector from position a to b: rho_tilde_ab = rho_vec_ab / rho_ab 
@@ -223,22 +217,10 @@ function h = compute_h_ab(r_a, r_b)
     % h = ( ( x_b - x_a ) ^ 2 + ( y_b - y_a ) ^ 2 ) ^ ( 1 / 2 );
     h = ( ( r_b(1) - r_a(1) ) ^ 2 + ( r_b(2) - r_a(2) ) ^ 2 ) ^ ( 1 / 2 );
 end
-% 
-% function rho = compute_rho_ab_neg(r_a, r_b)
-%     % Implements REF[1] Table 1 row 2 and 3
-%     % rho_ab_neg = (h_ab ^ 2 + ( z_b - z_a ) ^ 2 ) ^ ( 1 / 2 )
-%     h_ab = compute_h_ab(r_a, r_b);
-%     rho = (h_ab ^ 2 + ( r_b(3) - r_a(3) ) ^ 2 ) ^ ( 1 / 2 );
-% end
 
 function rho = compute_rho_ab(r_a, r_b)
     % Implements REF[1] Table 1 row 2 and 3
     % rho_ab_neg = (h_ab ^ 2 + ( z_b - z_a ) ^ 2 ) ^ ( 1 / 2 )
     h_ab = compute_h_ab(r_a, r_b);
     rho = (h_ab ^ 2 + ( r_b(3) + r_a(3) ) ^ 2 ) ^ ( 1 / 2 );
-end
-
-function z_1 = compute_z1(g, mu_s)
-    % from REF[3]
-    z_1 = ( ( 1 - g ) * mu_s ) ^ (-1);
 end
