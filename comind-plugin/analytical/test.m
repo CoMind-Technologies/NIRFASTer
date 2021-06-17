@@ -14,10 +14,10 @@ mus0p = 2.0;      % [mm^-1]
 mus0 = mus0p / ( 1 - g );
 
 figure,
-for i = 1:1
+for k = 1:1
     
-    mua = mua0 * i;
-    mus = mus0 * i;
+    mua = mua0 * k;
+    mus = mus0 * k;
     
     r_1 = [-8.0 0.0 0.0]; % [mm] source [x, y, z]
     r_2 = [ 0.0 0.0 0.0]; % [mm] J evaluation [x, y, z]

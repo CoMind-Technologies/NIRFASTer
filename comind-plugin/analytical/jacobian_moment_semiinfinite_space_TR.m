@@ -39,13 +39,6 @@ function [J] = jacobian_moment_semiinfinite_space_TR(r_1, r_2, r_3, omega, mua, 
 %       Applied optics, 28(12), 2331-2336.
 %
 
-% correct z_1 position, assuming z_1 is the boundary of the tissue we place
-% the origin of the source deeper in the tissue REF[3]
-b = 1;
-z_1 = ( ( 1 - g ) * mus ) ^ (-1);
-gamma = mua * c;
-kappa = c / ( 3 * ( mua + ( 1 - g ) * mus ) );
-
 if ( r_1(3) ~= 0 ) || ( r_3(3) ~= 0)
     error(['This function only supports z = 0  as the position of the boundary and origin of coordinates.',...
            'Sources and detectors should be placed at the boundary'])
@@ -55,28 +48,37 @@ end
 if ~isMellin
     error("Not Implemented")
 else
-    J = jacobian_mellin_moment_semiinfinite_space_TR(r_1, r_2, r_3, z_1, omega, gamma, kappa);
+    J = jacobian_mellin_moment_semiinfinite_space_TR(r_1, r_2, r_3, omega, mua, c, mus, g);
 end
 
 end
 
-function [J] = jacobian_mellin_moment_semiinfinite_space_TR(r_1, r_2, r_3, z_1, omega, gamma, kappa)
+function [J] = jacobian_mellin_moment_semiinfinite_space_TR(r_1, r_2, r_3, omega, mua, c, mus, g)
 
+% Compute optical parameters
+musp = ( 1 - g ) * mus;
+z_1 = 1 / musp;
+gamma = mua * c;
+kappa = c / ( 3 * ( mua + musp ) );
+
+% Compute positions
+r_1_neg = r_1 + [0 0 z_1]; % By convention in the z+ side
+r_1_pos = r_1 - [0 0 z_1]; % By convention in the z- side (mirror source)
 rho_23 = norm(r_3 - r_2);
-rho_12_neg = compute_rho_ab(r_1 - [0 0 z_1], r_2);
-rho_12_pos = compute_rho_ab(r_1 + [0 0 z_1], r_2);
+rho_12_neg = compute_rho_ab(r_1_neg, r_2);
+rho_12_pos = compute_rho_ab(r_1_pos, r_2);
 
-rho_tilde_12_neg = compute_rho_ab_tilde(r_1 - [0 0 z_1], r_2);
-rho_tilde_12_pos = compute_rho_ab_tilde(r_1 + [0 0 z_1], r_2);
+rho_tilde_12_neg = compute_rho_ab_tilde(r_1_neg, r_2);
+rho_tilde_12_pos = compute_rho_ab_tilde(r_1_pos, r_2);
 rho_tilde_23 = compute_rho_ab_tilde(r_2, r_3);
 
-% TODO are these below supposed to be distances over z?
-z_23 = abs(r_3(3) - r_2(3));
-z_12_neg = r_2(3) - z_1;
-z_12_pos = r_2(3) + z_1;
+% For a detector s(r_3) = [0, 0, -1], this are the z-dim of the equivalent
+% r_ab = r_b - r_a vectors
+z_23 = (r_3(3) - r_2(3));
+z_12_neg = (r_2(3) - r_1_neg);
+z_12_pos = (r_2(3) - r_1_pos);
 
 sigma = compute_sigma(gamma, omega, kappa);
-
 
 % Compute Jacobian for absorption REF[1] Eq. 47 
 ST_A = compute_ST(rho_12_neg, rho_23, kappa, sigma);
