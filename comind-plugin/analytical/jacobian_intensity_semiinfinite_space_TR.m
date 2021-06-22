@@ -1,4 +1,4 @@
-function J = jacobian_intensity_semiinfinite_space_TR(TODO)
+function J = jacobian_intensity_semiinfinite_space_TR(r_1, r_2, r_3, omega, gamma, kappa)
 % This is an implementation of the Jacobian
 %for the semi-infinite space as in REF[1].
 %

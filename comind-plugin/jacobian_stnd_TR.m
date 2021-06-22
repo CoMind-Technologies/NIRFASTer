@@ -57,13 +57,12 @@ isAll = false;
 
 if ~isempty(varargin)
     if length(varargin) >= 1
-        % frequency
         if ~ischar(varargin{1}) && ~isstring(varargin{1}) && (numel(varargin{1})==1)
             % sanity check
             if varargin{1} > 2
                 error('Maximum supported moment order is 2. Please see help for details on how to use this function.')
             else
-                order = 2; 
+                order = varargin{1}; 
             end
         else
             error('Bad 2nd argument value. A scalar expected. Please see help for details on how to use this function.')
