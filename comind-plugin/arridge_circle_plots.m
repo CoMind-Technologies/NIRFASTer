@@ -47,7 +47,7 @@ mesh_c.c = ones(size(mesh_c.c)) .* 0.21e12;
 
 % NB I have no idea what to do about ksi!!!
 
-generate_plots(mesh_c, mu_a_list, mu_sp, chosen_source, chosen_det, chosen_link, 'zeroth', false, true)
+generate_plots(mesh_c, mu_a_list, mu_sp, chosen_source, chosen_det, chosen_link, 'second', false, true)
 
 
 
@@ -145,16 +145,18 @@ for mi = 1:length(mu_a_list)
     % possibly normalise so that max (min) value along radius is 1 (-1)
     if normalised1
         maxkappa = max(J_rad_kappa);
-        if maxkappa > 0
+        minkappa = min(J_rad_kappa);
+        if abs(maxkappa) > abs(minkappa)
             J_rad_kappa = J_rad_kappa ./ maxkappa;
         else
-            J_rad_kappa = J_rad_kappa ./ min(J_rad_kappa);
+            J_rad_kappa = J_rad_kappa ./ minkappa;
         end
         maxmua = max(J_rad_mua);
-        if maxmua > 0
+        minmua = min(J_rad_mua);
+        if maxmua > abs(minmua)
             J_rad_mua = J_rad_mua ./ maxmua;
         else
-            J_rad_mua = J_rad_mua ./ min(J_rad_mua);
+            J_rad_mua = J_rad_mua ./ minmua;
         end
     end
 
