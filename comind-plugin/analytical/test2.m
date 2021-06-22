@@ -5,12 +5,12 @@ omega = 0;          % [Hz]
 order = 1;          % Only moment implemented
 c = 0.21;           % [mm/ps]
 g = 0.72;           % [dimensionless]
-isMellin = false;   % Only one implemented atm
+isMellin = true;   % Only one implemented atm
 isRelative = false;
 mua = 0.025;        % [mm^-1]
 musp = 2.0;         % [mm^-1]
 mus = musp / ( 1 - g );
-z_depth = 0.9;
+z_depth = 3;
 
 test_label = "T";
 

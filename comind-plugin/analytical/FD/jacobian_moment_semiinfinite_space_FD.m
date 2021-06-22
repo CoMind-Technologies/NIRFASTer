@@ -74,20 +74,20 @@ function [J] = jacobian_mellin_moment_semiinfinite_space_FD(r_1, r_2, r_3, omega
 sigma = compute_sigma(gamma, omega, kappa);
 
 % Compute Jacobian for absorption REF[1] Eq. 47 
-ST_A = compute_S_FD(rho_12_neg, rho_23, kappa, sigma);
-ST_B = compute_S_FD(rho_12_pos, rho_23, kappa, sigma);
-J_alpha =  2 * z_23 / rho_23 * (ST_A - ST_B);
+S_neg = compute_S_FD(rho_12_neg, rho_23, kappa, sigma); % <ok>
+S_pos = compute_S_FD(rho_12_pos, rho_23, kappa, sigma); % <ok>
+J_alpha =  2 * z_23 / rho_23 * (S_neg - S_pos); % <ok>
 
 % Compute Jacobian for diffusion REF[1] Eq. 52
 % taking into account that to obtain the first moment we need to do
 % omega = 0
-TT_A = compute_T_FD(rho_12_neg, rho_23, sigma, kappa);
-WT_A = compute_W_FD(rho_12_neg, rho_23, sigma, kappa);
-TT_B = compute_T_FD(rho_12_pos, rho_23, sigma, kappa);
-WT_B = compute_W_FD(rho_12_pos, rho_23, sigma, kappa);
+T_neg = compute_T_FD(rho_12_neg, rho_23, sigma, kappa); % <ok>
+W_neg = compute_W_FD(rho_12_neg, rho_23, sigma, kappa); % <ok>
+T_pos = compute_T_FD(rho_12_pos, rho_23, sigma, kappa); % <ok>
+W_pos = compute_W_FD(rho_12_pos, rho_23, sigma, kappa); % <ok>
 
-J_nu =     - z_12_neg * TT_A + z_23 * ( rho_tilde_12_neg * rho_tilde_23' ) * WT_A ...
-       - ( - z_12_pos * TT_B + z_23 * ( rho_tilde_12_pos * rho_tilde_23' ) * WT_B );
+J_nu =     - z_12_neg * T_neg + z_23 * ( rho_tilde_12_neg * rho_tilde_23' ) * W_neg ... % <ok>
+       - ( - z_12_pos * T_pos + z_23 * ( rho_tilde_12_pos * rho_tilde_23' ) * W_pos );  % <ok>
        
 J = [J_alpha, J_nu];
 
@@ -118,23 +118,24 @@ function [J] = jacobian_temporal_moment_semiinfinite_space_FD(r_1, r_2, r_3, ome
 sigma = compute_sigma(gamma, 0, kappa);
 
 % Compute Jacobian for absorption REF[1] Eq. 47 
-ST_A = compute_S_FD(rho_12_neg, rho_23, kappa, sigma);
-ST_B = compute_S_FD(rho_12_pos, rho_23, kappa, sigma);
-G_E  = compute_G_FD(r_3, r_2, sigma);
-J_alpha =  2 * z_23 / rho_23 * 1 / G_E * (ST_A - ST_B);
+S_neg = compute_S_FD(rho_12_neg, rho_23, kappa, sigma); % <ok>
+S_pos = compute_S_FD(rho_12_pos, rho_23, kappa, sigma); % <ok>
+G_E  = compute_G_FD(r_3, r_1 + [0 0 z_1], sigma);                   % <ok>
+disp(G_E)
+J_alpha =  2 * z_23 / rho_23 * 1 / G_E * (S_neg - S_pos);
 
 % TODO and still TODO many questions here
 % Compute Jacobian for diffusion REF[1] Eq. 52
 % taking into account that to obtain the first moment we need to do
 % omega = 0
-JT = jacobian_mellin_moment_semiinfinite_space_FD(r_1, r_2, r_3, omega, mua, c, mus, g);
-JT_nu = JT(2);
-rho_13 = norm( r_3 - r_1 );
-t_Gamma = compute_t_Gamma_FD(rho_13, sigma, kappa);
-J_Gamma = jacobian_flux_semiinfinite_space_FD(r_1, r_2, r_3, mua, c, mus, g, omega);
+JT = jacobian_mellin_moment_semiinfinite_space_FD(r_1, r_2, r_3, omega, mua, c, mus, g); % <ok>
+JT_nu = JT(2); % <ok>
+rho_13 = norm( r_3 - r_1 ); % <ok>
+t_Gamma = compute_t_Gamma_FD(rho_13, sigma, kappa); % <ok>
+J_Gamma = jacobian_flux_semiinfinite_space_FD(r_1, r_2, r_3, mua, c, mus, g, omega); % <ok>
 J_nu_Gamma = J_Gamma(2);
 
-J_nu = 1 / G_E * (  JT_nu - t_Gamma * J_nu_Gamma );
+J_nu = 1 / G_E * (  JT_nu - t_Gamma * J_nu_Gamma ); % <ok>
        
 J = [J_alpha, J_nu];
 

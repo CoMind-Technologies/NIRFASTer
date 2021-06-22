@@ -12,12 +12,10 @@ function J = jacobian_integrated_intensity_semiinfinite_space_CW(r_1, r_2, r_3, 
 omega = 0; % <ok>
 J = jacobian_flux_semiinfinite_space_FD(r_1, r_2, r_3, mua, c, mus, g, omega); % <ok>
 
-
-
 if isRelative
-    [~, gamma, kappa] = compute_optical_parameters(c, mua, mus, g);
+    [z_1, gamma, kappa] = compute_optical_parameters(c, mua, mus, g);
     sigma_0 = compute_sigma(gamma, 0, kappa);
-    G = compute_G_FD(r_3, r_2, sigma_0);
+    G = compute_G_FD(r_3, r_1 + [0 0 z_1], sigma_0); % changed r_2 for r_1 + [0 0 z_1]
     J = J / G;
 end
 

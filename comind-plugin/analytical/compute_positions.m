@@ -12,9 +12,9 @@ function [rho_23, rho_12_neg, rho_12_pos, rho_tilde_12_neg, ...
 
     % For a detector s(r_3) = [0, 0, -1], this are the z-dim of the equivalent
     % r_ab = r_b - r_a vectors
-    z_23 = (r_3(3) - r_2(3));
-    z_12_neg = (r_2(3) - r_1_neg);
-    z_12_pos = (r_2(3) - r_1_pos);
+    z_23 = (r_3(3) - r_2(3)); % <ok>
+    z_12_neg = (r_2(3) - r_1_neg(3)); % <ok>
+    z_12_pos = (r_2(3) - r_1_pos(3)); % <ok>
 end
 
 function rho_tilde = compute_rho_ab_tilde(r_a, r_b)
